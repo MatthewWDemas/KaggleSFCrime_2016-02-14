@@ -1,0 +1,49 @@
+---
+title: "Exploratory Data Analysis on SF Crime Data"
+author: "M. Demas"
+date: "15 February 2016"
+output: pdf_document
+---
+
+# Days of the Week
+```{r relevel-day-factor}
+train$DayOfWeek <- as.character(train$DayOfWeek)
+train$DayOfWeek <- factor(train$DayOfWeek, levels=c("Sunday", "Monday", 
+                                                    "Tuesday", "Wednesday", 
+                                                    "Thursday", "Friday", 
+                                                    "Saturday"))
+```
+
+```{r summarize-data-into-count}
+library(dplyr)
+df <- train %>% 
+  group_by(PdDistrict, DayOfWeek, Category) %>% 
+  summarise(Count = n())
+```
+
+Crimes of day of the week is not very enlightening. So I conditioned it by District.
+```{r plot-conditioned-on-district}
+fig_dir = '~/Box Sync/KaggleSFCrime/Figures/'
+setwd(fig_dir)
+
+library(ggplot2)
+ggplot(df, aes(x=DayOfWeek, y=Count)) + geom_bar(stat="identity")
+ggplot(df, aes(x=DayOfWeek, y=Count)) + 
+  geom_bar(stat="identity") + 
+  facet_wrap(~PdDistrict) +
+  ggtitle("Count of Crimes for Each Day of the Week Conditioned on District")
+ggsave('CrimeCountPerDayOfWeekInEachDistrict_2016-02-16.png')
+```
+
+It would be interesting to understand how well SF is "mapped" by the crimes. A first scatter plot reveals some outliers Southern with coordinates long = -120.5, lat = 90 (perhaps they represent crimes across the bay?). I filtered out those values, and plotted again. The level of coverage seems fairly comprehensive. However, there appear to be some District misclassifications.
+```{r scatter-plot-coordinates}
+
+ggplot(train, aes(x=X, y=Y, color=PdDistrict)) + 
+  geom_point(position='jitter') +
+  ggtitle("Scatter Plot of Crimes (long.,lat.) Conditioned on District")
+ggsave('CrimeScatterPlotInEachDistrict_2016-02-16.png')
+
+ggplot(train %>% filter(X < -122.0, Y < 50), aes(x=X, y=Y, color=PdDistrict)) + 
+  geom_point(position='jitter') +
+  ggtitle("Scatter Plot of Crimes (long.,lat.) Conditioned on District")
+ggsave('CrimeScatterPlotInEachDistrict_2016-02-16.png')
