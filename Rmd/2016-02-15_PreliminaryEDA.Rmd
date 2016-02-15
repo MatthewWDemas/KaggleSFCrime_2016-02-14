@@ -20,14 +20,17 @@ train$DayOfWeek <- factor(train$DayOfWeek, levels=c("Sunday", "Monday",
 ```
 
 ```{r summarize-data-into-count}
+
+```
+
+# District Categorization
+Crimes of day of the week is not very enlightening. So I conditioned it by District. This view shows that certain districts have greater number of incidents (e.g. Southern). Based on this plot it is clear that count varies with District (location). Another plot depicting the same information with color-coded categories has potential, but there are too many categories for the plot to be useful at this point. Thus, either using single plots based on the Category or by District may be more revealing. Additionally, as RD mentioned, 90% of the crimes are contained within 40 categories (crime count between 880 and 60022).
+```{r plot-conditioned-on-district}
 library(dplyr)
 df <- train %>% 
   group_by(PdDistrict, DayOfWeek, Category) %>% 
   summarise(Count = n())
-```
 
-Crimes of day of the week is not very enlightening. So I conditioned it by District.
-```{r plot-conditioned-on-district}
 fig_dir = '~/Box Sync/KaggleSFCrime/Figures/'
 setwd(fig_dir)
 
@@ -38,8 +41,38 @@ ggplot(df, aes(x=DayOfWeek, y=Count)) +
   facet_wrap(~PdDistrict) +
   ggtitle("Count of Crimes for Each Day of the Week Conditioned on District")
 ggsave('CrimeCountPerDayOfWeekInEachDistrict_2016-02-16.png')
+
+ggplot(df, aes(x=DayOfWeek, y=Count, fill=Category)) + 
+  geom_bar(stat="identity") + 
+  facet_wrap(~PdDistrict, ncol=2) +
+  ggtitle("Count of Crimes for Each Day of the Week Conditioned on District and Category") +
+  theme(legend.position="bottom")
+ggsave('CrimeCountPerDayOfWeekInEachDistrictColorByCategory_2016-02-16.png')
 ```
 
+It would be helpful to filter out some of the unhelpful codes (such as "OTHER OFFENSES" and "SECONDARY CODES").
+```{r excluding-lower-frequency-crimes}
+tbl_df(df %>% arrange(desc(Count)))
+
+ggplot(df %>% filter(Category != 'OTHER OFFENSES', Category != 'SECONDARY CODES'), aes(x=DayOfWeek, y=Count, fill=Category)) + 
+  geom_bar(stat="identity") + 
+  facet_wrap(~PdDistrict, ncol=2) +
+  ggtitle("Count of Crimes for Each Day of the Week Conditioned on District and Category\n Top 40 Crimes") +
+  theme(legend.position="bottom")
+ggsave('CrimeCountPerDayOfWeekInEachDistrictColorByTopCategory_2016-02-16.png')
+
+
+
+ggplot(df %>% filter(Count > 880, Category != 'OTHER OFFENSES'), aes(x=DayOfWeek, y=Count, fill=Category)) + 
+  geom_bar(stat="identity") + 
+  facet_wrap(~PdDistrict, ncol=2) +
+  ggtitle("Count of Crimes for Each Day of the Week Conditioned on District and Category\n Top 40 Crimes") +
+  theme(legend.position="bottom")
+ggsave('CrimeCountPerDayOfWeekInEachDistrictColorByTopCategory_2016-02-16.png')
+```
+
+
+# Spatial Distribution
 It would be interesting to understand how well SF is "mapped" by the crimes. A first scatter plot reveals some outliers Southern with coordinates long = -120.5, lat = 90 (perhaps they represent crimes across the bay?). I filtered out those values, and plotted again. The level of coverage seems fairly comprehensive. However, there appear to be some District misclassifications.
 ```{r scatter-plot-coordinates}
 
