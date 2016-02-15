@@ -5,6 +5,11 @@ date: "15 February 2016"
 output: pdf_document
 ---
 
+
+```{r import-data}
+train <- read.csv("~/Box Sync/KaggleSFCrime/Data/train.csv")
+```
+
 # Days of the Week
 ```{r relevel-day-factor}
 train$DayOfWeek <- as.character(train$DayOfWeek)
