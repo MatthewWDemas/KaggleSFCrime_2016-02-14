@@ -2,3 +2,5 @@
 .Rhistory
 .RData
 train.csv
+*.pyc
+*.swp
