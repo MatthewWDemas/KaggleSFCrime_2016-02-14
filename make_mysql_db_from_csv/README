@@ -1,6 +1,17 @@
-I tried making a script that automatically made a DB (if not already made), then making a table from the data file headers (if not already made), then populating the data in the table (if the table was empty).
+I tried making a script that automatically made a DB (if not already made),
+then making a table from the data file headers (if not already made), then
+populating the data in the table (if the table was empty).
 
-However, it turns out getting permissions right from system to system to create a database are terrible, and since we're only doing this once and we are using different OS's, that I would just paste the commands to get this going below.
+However, it turns out getting permissions right from system to system to create
+a database are terrible, and since we're only doing this once and we are using
+different OS's, that I would just paste the commands to get this going below.
+
+NOTE: train.csv is too big (>100MB) to put on Github, so I included a 7zipped
+compressed version of it; decompress
+
+p7zip -d train.csv.7z
+
+This must be done before trying to port it into the database.
 
 #--------------------------------------
 STEPS TO PORT train.csv TO DATABASE/TABLE
@@ -8,6 +19,7 @@ STEPS TO PORT train.csv TO DATABASE/TABLE
 mysql -u root
 CREATE DATABASE kaggle_sf;
 USE kaggle_sf;
+DROP TABLE IF EXISTS train;
 CREATE TABLE `train` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `dates` varchar(256) DEFAULT NULL,
