@@ -1,0 +1,117 @@
+I tried making a script that automatically made a DB (if not already made), then making a table from the data file headers (if not already made), then populating the data in the table (if the table was empty).
+
+However, it turns out getting permissions right from system to system to create a database are terrible, and since we're only doing this once and we are using different OS's, that I would just paste the commands to get this going below.
+
+#--------------------------------------
+STEPS TO PORT train.csv TO DATABASE/TABLE
+#--------------------------------------
+mysql -u root
+CREATE DATABASE kaggle_sf;
+USE kaggle_sf;
+CREATE TABLE `train` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `dates` varchar(256) DEFAULT NULL,
+  `category` varchar(256) DEFAULT NULL,
+  `descript` varchar(256) DEFAULT NULL,
+  `dayofweek` varchar(256) DEFAULT NULL,
+  `pddistrict` varchar(256) DEFAULT NULL,
+  `resolution` varchar(256) DEFAULT NULL,
+  `address` varchar(256) DEFAULT NULL,
+  `x` varchar(256) DEFAULT NULL,
+  `y` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+LOAD DATA LOCAL INFILE 'train.csv' INTO TABLE train FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 LINES (dates,category,descript,dayofweek,pddistrict,resolution,address,x,y);
+
+
+#--------------------------------------
+EXAMPLE QUERY: count crimes after certain date
+#--------------------------------------
+mysql> SELECT COUNT(*) FROM train WHERE dates > '2015-05-13';
++----------+
+| COUNT(*) |
++----------+
+|      362 |
++----------+
+
+
+#--------------------------------------
+EXAMPLE QUERY: count number of crimes in each category
+from: http://stackoverflow.com/a/1346352/1717828
+#--------------------------------------
+mysql> SELECT category, COUNT(*) as c FROM train GROUP BY category ORDER BY c DESC;
++-----------------------------+--------+
+| category                    | c      |
++-----------------------------+--------+
+| LARCENY/THEFT               | 174900 |
+| OTHER OFFENSES              | 126182 |
+| NON-CRIMINAL                |  92304 |
+| ASSAULT                     |  76876 |
+| DRUG/NARCOTIC               |  53971 |
+| VEHICLE THEFT               |  53781 |
+| VANDALISM                   |  44725 |
+| WARRANTS                    |  42214 |
+| BURGLARY                    |  36755 |
+| SUSPICIOUS OCC              |  31414 |
+| MISSING PERSON              |  25989 |
+| ROBBERY                     |  23000 |
+| FRAUD                       |  16679 |
+| FORGERY/COUNTERFEITING      |  10609 |
+| SECONDARY CODES             |   9985 |
+| WEAPON LAWS                 |   8555 |
+| PROSTITUTION                |   7484 |
+| TRESPASS                    |   7326 |
+| STOLEN PROPERTY             |   4540 |
+| SEX OFFENSES FORCIBLE       |   4388 |
+| DISORDERLY CONDUCT          |   4320 |
+| DRUNKENNESS                 |   4280 |
+| RECOVERED VEHICLE           |   3138 |
+| KIDNAPPING                  |   2341 |
+| DRIVING UNDER THE INFLUENCE |   2268 |
+| RUNAWAY                     |   1946 |
+| LIQUOR LAWS                 |   1903 |
+| ARSON                       |   1513 |
+| LOITERING                   |   1225 |
+| EMBEZZLEMENT                |   1166 |
+| SUICIDE                     |    508 |
+| FAMILY OFFENSES             |    491 |
+| BAD CHECKS                  |    406 |
+| BRIBERY                     |    289 |
+| EXTORTION                   |    256 |
+| SEX OFFENSES NON FORCIBLE   |    148 |
+| GAMBLING                    |    146 |
+| PORNOGRAPHY/OBSCENE MAT     |     22 |
+| TREA                        |      6 |
++-----------------------------+--------+
+39 rows in set (0.00 sec)
+
+#--------------------------------------
+EXAMPLE QUERY: breakdown of crimes on a given date
+#--------------------------------------
+mysql> SELECT category as 'crime committed on 2015-05-13' , COUNT(*) AS count FROM train WHERE dates BETWEEN '2015-05-13 00:00:00' AND '2015-15-13 23:59:59' GROUP BY category ORDER BY count DESC;
++-------------------------------+-------+
+| crime committed on 2015-05-13 | count |
++-------------------------------+-------+
+| LARCENY/THEFT                 |   102 |
+| OTHER OFFENSES                |    47 |
+| NON-CRIMINAL                  |    42 |
+| ASSAULT                       |    23 |
+| WARRANTS                      |    22 |
+| VEHICLE THEFT                 |    21 |
+| BURGLARY                      |    19 |
+| VANDALISM                     |    18 |
+| ROBBERY                       |    15 |
+| SUSPICIOUS OCC                |    15 |
+| DRUG/NARCOTIC                 |    10 |
+| MISSING PERSON                |     7 |
+| SECONDARY CODES               |     5 |
+| FORGERY/COUNTERFEITING        |     3 |
+| TRESPASS                      |     3 |
+| WEAPON LAWS                   |     2 |
+| STOLEN PROPERTY               |     2 |
+| KIDNAPPING                    |     2 |
+| RUNAWAY                       |     1 |
+| FRAUD                         |     1 |
+| DRUNKENNESS                   |     1 |
+| DRIVING UNDER THE INFLUENCE   |     1 |
++-------------------------------+-------+
