@@ -10,6 +10,55 @@ import geo
 class CategoryPredictor:
     def __init__(self,mystery_crime):
         self.mystery_crime = mystery_crime
+        
+        crime_categories = ['ARSON',
+                            'ASSAULT',
+                            'BAD CHECKS',
+                            'BRIBERY',
+                            'BURGLARY',
+                            'DISORDERLY CONDUCT',
+                            'DRIVING UNDER THE INFLUENCE',
+                            'DRUG/NARCOTIC',
+                            'DRUNKENNESS',
+                            'EMBEZZLEMENT',
+                            'EXTORTION',
+                            'FAMILY OFFENSES',
+                            'FORGERY/COUNTERFEITING',
+                            'FRAUD',
+                            'GAMBLING',
+                            'KIDNAPPING',
+                            'LARCENY/THEFT',
+                            'LIQUOR LAWS',
+                            'LOITERING',
+                            'MISSING PERSON',
+                            'NON-CRIMINAL',
+                            'OTHER OFFENSES',
+                            'PORNOGRAPHY/OBSCENE MAT',
+                            'PROSTITUTION',
+                            'RECOVERED VEHICLE',
+                            'ROBBERY',
+                            'RUNAWAY',
+                            'SECONDARY CODES',
+                            'SEX OFFENSES FORCIBLE',
+                            'SEX OFFENSES NON FORCIBLE',
+                            'STOLEN PROPERTY',
+                            'SUICIDE',
+                            'SUSPICIOUS OCC',
+                            'TREA',
+                            'TRESPASS',
+                            'VANDALISM',
+                            'VEHICLE THEFT',
+                            'WARRANTS',
+                            'WEAPON LAWS']
+
+        #make dictionary initialized to zero of all crime categories, e.g.:
+        #        'ARSON'     :0,
+        #        'ASSAULT'   :0,
+        #        'BAD CHECKS':0,
+        #        'BRIBERY'   :0,
+        #        ...
+#http://stackoverflow.com/a/2244026/1717828
+        self.category_probabilities = {cat: 0 for cat in crime_categories}        
 
     #takes two crime objects and returns the distance between them
     #verify correect distance with http://www.gpsvisualizer.com/calculators
