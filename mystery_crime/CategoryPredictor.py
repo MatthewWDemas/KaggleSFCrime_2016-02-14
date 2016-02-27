@@ -82,7 +82,7 @@ class CategoryPredictor:
         cursor = cnx.cursor()
 
         #test query
-        query = "SELECT id,dates,category,dayofweek,pddistrict,address,x,y FROM train WHERE pddistrict = '%s'"%self.mystery_crime.pddistrict
+        query = "SELECT id,dates,category,dayofweek,pddistrict,address,x,y FROM train"
 
         #submit query
         try:
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     killin = Crime(
             -1,
             "2012-07-27 19:00:00",
-            "DOMESTIC VIOLENCE",
+            "SECONDARY CODES",
             "Sunday",
             "MISSION",
             "2900 Block of 16TH ST",

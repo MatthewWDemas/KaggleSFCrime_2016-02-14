@@ -53,4 +53,3 @@ if __name__ == "__main__":
 
     print("Stabbin coords are",stabbin.get_coordinates())
     print("Killin coords are",killin.get_coordinates())
-
