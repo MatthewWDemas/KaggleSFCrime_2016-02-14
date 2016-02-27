@@ -11,10 +11,11 @@
 #    -y (latitude)
     
 class Crime:
-    def __init__(self,Id,dates,dayofweek,pddistrict,address,x,y):
+    def __init__(self,Id,dates,category,dayofweek,pddistrict,address,x,y):
 
         self.Id = Id
         self.dates = dates
+        self.category = category
         self.dayofweek = dayofweek
         self.pddistrict = pddistrict
         self.address = address
@@ -33,6 +34,7 @@ if __name__ == "__main__":
     stabbin = Crime(
             -1,
             "2016-01-01 00:00:01",
+            "null",
             "Wednesday",
             "Mission",
             "100 Valencia Ave",
@@ -42,6 +44,7 @@ if __name__ == "__main__":
     killin = Crime(
             -2,
             "2016-01-02 00:00:01",
+            "null",
             "Wednesday",
             "Mission",
             "VANNESS AV",

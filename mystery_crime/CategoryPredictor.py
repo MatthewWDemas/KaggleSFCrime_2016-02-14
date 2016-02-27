@@ -58,7 +58,7 @@ class CategoryPredictor:
         #        'BAD CHECKS':0,
         #        'BRIBERY'   :0,
         #        ...
-#http://stackoverflow.com/a/2244026/1717828
+        #http://stackoverflow.com/a/2244026/1717828
         self.category_probabilities = {cat: 0 for cat in crime_categories}        
 
         #known_crimes is list of Crime objects to compare to mystery_crime
@@ -82,7 +82,7 @@ class CategoryPredictor:
         cursor = cnx.cursor()
 
         #test query
-        query = "SELECT id,dates,dayofweek,pddistrict,address,x,y FROM train WHERE pddistrict = '%s'"%self.mystery_crime.pddistrict
+        query = "SELECT id,dates,category,dayofweek,pddistrict,address,x,y FROM train WHERE pddistrict = '%s' LIMIT 10"%self.mystery_crime.pddistrict
 
         #submit query
         try:
@@ -100,6 +100,7 @@ if __name__ == "__main__":
     killin = Crime(
             -4,
             "2015-05-10 23:10:00",
+            "null",
             "Sunday",
             "MISSION",
             "2900 Block of 16TH ST",
@@ -108,5 +109,10 @@ if __name__ == "__main__":
 
     category_predictor = CategoryPredictor(killin)
     category_predictor.known_crimes = category_predictor.crimes_from_query("null")
-    for crime in category_predictor.known_crimes:
-        print("Distance between crimes %d and %d is %f m."%(crime.Id,killin.Id,category_predictor.dist_between_crimes(killin,crime)))
+
+    #calc prob dist array
+    for known_crime in category_predictor.known_crimes:
+        r = category_predictor.dist_between_crimes(killin,known_crime)
+        category_predictor.category_probabilities[known_crime.category]+=1/(r*r)
+
+    print(category_predictor.category_probabilities)
