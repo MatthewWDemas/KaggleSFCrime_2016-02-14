@@ -82,7 +82,7 @@ class CategoryPredictor:
         cursor = cnx.cursor()
 
         #test query
-        query = "SELECT id,dates,category,dayofweek,pddistrict,address,x,y FROM train WHERE pddistrict = '%s' LIMIT 10"%self.mystery_crime.pddistrict
+        query = "SELECT id,dates,category,dayofweek,pddistrict,address,x,y FROM train WHERE pddistrict = '%s'"%self.mystery_crime.pddistrict
 
         #submit query
         try:
@@ -98,14 +98,14 @@ class CategoryPredictor:
 if __name__ == "__main__":
     #get crime from test.csv (dummy crime below simulates that)
     killin = Crime(
-            -4,
-            "2015-05-10 23:10:00",
-            "null",
+            -1,
+            "2012-07-27 19:00:00",
+            "DOMESTIC VIOLENCE",
             "Sunday",
             "MISSION",
             "2900 Block of 16TH ST",
-            "-122.418700097043",
-            "37.7651649409646")
+            "-122.411093822635",
+            "37.7610475742041")
 
     category_predictor = CategoryPredictor(killin)
     category_predictor.known_crimes = category_predictor.crimes_from_query("null")
@@ -115,4 +115,5 @@ if __name__ == "__main__":
         r = category_predictor.dist_between_crimes(killin,known_crime)
         category_predictor.category_probabilities[known_crime.category]+=1/(r*r)
 
-    print(category_predictor.category_probabilities)
+    for key, value in category_predictor.category_probabilities.items():
+        print(value, key)
