@@ -4,7 +4,6 @@
 from Crime import Crime
 import geo
 import mysql.connector
-import random
 
 #CategoryPredictor object is initalized with a crime of unknown category and
 #builds an array of probabilities for each category
@@ -78,12 +77,6 @@ class CategoryPredictor:
         #initialize DB connector
         cnx = mysql.connector.connect(user='root', database='kaggle_sf')
         cursor = cnx.cursor()
-
-        rand1=random.randint(1,878049)
-        rand2=random.randint(1,878049)
-        rand3=random.randint(1,878049)
-        rand4=random.randint(1,878049)
-        rand5=random.randint(1,878049)
 
         #test query
         query = "SELECT id,dates,dayofweek,pddistrict,address,x,y FROM train WHERE pddistrict = '%s'"%self.mystery_crime.pddistrict
