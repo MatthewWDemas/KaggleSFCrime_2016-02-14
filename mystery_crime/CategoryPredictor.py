@@ -81,9 +81,12 @@ class CategoryPredictor:
 
         rand1=random.randint(1,878049)
         rand2=random.randint(1,878049)
+        rand3=random.randint(1,878049)
+        rand4=random.randint(1,878049)
+        rand5=random.randint(1,878049)
 
         #test query
-        query = "SELECT id,dates,dayofweek,pddistrict,address,x,y FROM train WHERE id=%d or id=%d"%(rand1,rand2)
+        query = "SELECT id,dates,dayofweek,pddistrict,address,x,y FROM train WHERE pddistrict = '%s'"%self.mystery_crime.pddistrict
 
         #submit query
         try:
@@ -93,37 +96,23 @@ class CategoryPredictor:
             print("Mysql query error: {}".format(err))
             exit(1)
 
-        #return list
-        for crime in cursor:
-            c = Crime(*crime)
-            self.known_crimes.append(c)
+        return [Crime(*c) for c in cursor]
         
 #test case; only runs when ./Crime.py is called from command line
 if __name__ == "__main__":
-    stabbin = Crime(
-            -3,
-            "2016-01-01 00:00:01",
-            "Wednesday",
-            "Mission",
-            "100 Valencia Ave",
-            "-122.407532192495",
-            "37.7781942181426")
-
+    #get crime from test.csv (dummy crime below simulates that)
     killin = Crime(
             -4,
-            "2016-01-02 00:00:01",
-            "Wednesday",
-            "Mission",
-            "VANNESS AV",
-            "-122.485073656871",
-            "37.72399838089769")
+            "2015-05-10 23:10:00",
+            "Sunday",
+            "MISSION",
+            "2900 Block of 16TH ST",
+            "-122.418700097043",
+            "37.7651649409646")
 
-    print("Stabbin coords are",stabbin.get_coordinates())
     print("Killin coords are",killin.get_coordinates())
 
-    category_predictor = CategoryPredictor(stabbin)
-    print("Distance between crimes is",category_predictor.dist_between_crimes(killin,stabbin))
-
-    category_predictor.crimes_from_query("null")
+    category_predictor = CategoryPredictor(killin)
+    category_predictor.known_crimes = category_predictor.crimes_from_query("null")
     for crime in category_predictor.known_crimes:
         print("Distance between crimes %d and %d is %f m."%(crime.Id,killin.Id,category_predictor.dist_between_crimes(killin,crime)))
