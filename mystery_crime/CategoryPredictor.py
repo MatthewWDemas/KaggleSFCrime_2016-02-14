@@ -3,6 +3,8 @@
 
 from Crime import Crime
 import geo
+import mysql.connector
+import random
 
 #CategoryPredictor object is initalized with a crime of unknown category and
 #builds an array of probabilities for each category
@@ -60,6 +62,9 @@ class CategoryPredictor:
 #http://stackoverflow.com/a/2244026/1717828
         self.category_probabilities = {cat: 0 for cat in crime_categories}        
 
+        #known_crimes is list of Crime objects to compare to mystery_crime
+        self.known_crimes = []
+
     #takes two crime objects and returns the distance between them
     #verify correect distance with http://www.gpsvisualizer.com/calculators
     def dist_between_crimes(self,crime1,crime2):
@@ -68,10 +73,35 @@ class CategoryPredictor:
 
         #splat operator * turns fnctn(['p','p']) into fnctn('p1','p2')
         return geo.distance(geo.xyz(*coord1),geo.xyz(*coord2))
+
+    def crimes_from_query(self,query):
+        #initialize DB connector
+        cnx = mysql.connector.connect(user='root', database='kaggle_sf')
+        cursor = cnx.cursor()
+
+        rand1=random.randint(1,878049)
+        rand2=random.randint(1,878049)
+
+        #test query
+        query = "SELECT id,dates,dayofweek,pddistrict,address,x,y FROM train WHERE id=%d or id=%d"%(rand1,rand2)
+
+        #submit query
+        try:
+            #super dangerous!!  never expose this API to the public!
+            cursor.execute(query) 
+        except mysql.connector.Error as err:
+            print("Mysql query error: {}".format(err))
+            exit(1)
+
+        #return list
+        for crime in cursor:
+            c = Crime(*crime)
+            self.known_crimes.append(c)
         
 #test case; only runs when ./Crime.py is called from command line
 if __name__ == "__main__":
     stabbin = Crime(
+            -3,
             "2016-01-01 00:00:01",
             "Wednesday",
             "Mission",
@@ -80,6 +110,7 @@ if __name__ == "__main__":
             "37.7781942181426")
 
     killin = Crime(
+            -4,
             "2016-01-02 00:00:01",
             "Wednesday",
             "Mission",
@@ -92,3 +123,7 @@ if __name__ == "__main__":
 
     category_predictor = CategoryPredictor(stabbin)
     print("Distance between crimes is",category_predictor.dist_between_crimes(killin,stabbin))
+
+    category_predictor.crimes_from_query("null")
+    for crime in category_predictor.known_crimes:
+        print("Distance between crimes %d and %d is %f m."%(crime.Id,killin.Id,category_predictor.dist_between_crimes(killin,crime)))

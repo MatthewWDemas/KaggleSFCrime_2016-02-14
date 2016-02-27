@@ -11,23 +11,27 @@
 #    -y (latitude)
     
 class Crime:
-    def __init__(self,dates,dayofweek,pddistrict,address,x,y):
+    def __init__(self,Id,dates,dayofweek,pddistrict,address,x,y):
 
+        self.Id = Id
         self.dates = dates
         self.dayofweek = dayofweek
         self.pddistrict = pddistrict
         self.address = address
-        self.x = x
-        self.y = y
+
+        #for some reason, db has x=longitude and y=latitude...
+        self.lon = x
+        self.lat = y
 
     def get_coordinates(self):
         #return list of floats
-        return [float(i) for i in [self.y,self.x]]
+        return [float(i) for i in [self.lat,self.lon]]
         
 
 #test case; only runs when ./Crime.py is called from command line
 if __name__ == "__main__":
     stabbin = Crime(
+            -1,
             "2016-01-01 00:00:01",
             "Wednesday",
             "Mission",
@@ -36,6 +40,7 @@ if __name__ == "__main__":
             "37.7350510103906")
 
     killin = Crime(
+            -2,
             "2016-01-02 00:00:01",
             "Wednesday",
             "Mission",
