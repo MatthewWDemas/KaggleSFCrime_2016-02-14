@@ -71,7 +71,10 @@ class CategoryPredictor:
         coord2 = crime2.get_coordinates()
 
         #splat operator * turns fnctn(['p','p']) into fnctn('p1','p2')
-        return geo.distance(geo.xyz(*coord1),geo.xyz(*coord2))
+        dist = geo.distance(geo.xyz(*coord1),geo.xyz(*coord2))
+
+        #avoid 1/r^2 singularities with 100 m min dist
+        return dist if dist > 100 else 100
 
     def crimes_from_query(self,query):
         #initialize DB connector
@@ -102,8 +105,6 @@ if __name__ == "__main__":
             "2900 Block of 16TH ST",
             "-122.418700097043",
             "37.7651649409646")
-
-    print("Killin coords are",killin.get_coordinates())
 
     category_predictor = CategoryPredictor(killin)
     category_predictor.known_crimes = category_predictor.crimes_from_query("null")
