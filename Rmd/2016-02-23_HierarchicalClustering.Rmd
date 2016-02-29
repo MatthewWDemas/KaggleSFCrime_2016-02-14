@@ -1,0 +1,30 @@
+---
+title: "Hierarchical Clustering"
+author: "M. Demas"
+date: "23 February 2016"
+output: beamer_presentation
+---
+
+## Import Data
+```{r import-data}
+train <- read.csv("~/Box Sync/KaggleSFCrime/Data/train.csv")
+```
+
+## Date Time Conversion
+- There are 47 NAs
+```{r convert-date-time}
+library(dplyr)
+train$DateTime <- z <- strptime(train$Dates, "%F %H:%M:%S")
+train$DateTime <- z <- as.POSIXct(train$Dates, "%F %H:%M:%S", tz='UTC')
+df <- train %>% arrange(DateTime)
+```
+
+## R Markdown
+
+-  I don't know very much about clustering, but I'll try it out here.
+```{r cluster-v1, eval=FALSE}
+
+data.dist=dist(sd.data)
+> plot(hclust (data.dist), labels =nci.labs , main=" Complete
+Linkage ", xlab ="", sub ="", ylab ="")
+```
