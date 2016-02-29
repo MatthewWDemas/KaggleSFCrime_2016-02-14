@@ -29,7 +29,8 @@ Crimes of day of the week is not very enlightening. So I conditioned it by Distr
 library(dplyr)
 df <- train %>% 
   group_by(PdDistrict, DayOfWeek, Category) %>% 
-  summarise(Count = n())
+  summarise(Count = n()) %>%
+  arrange(Count)
 
 fig_dir = '~/Box Sync/KaggleSFCrime/Figures/'
 setwd(fig_dir)
@@ -85,3 +86,143 @@ ggplot(train %>% filter(X < -122.0, Y < 50), aes(x=X, y=Y, color=PdDistrict)) +
   geom_point(position='jitter') +
   ggtitle("Scatter Plot of Crimes (long.,lat.) Conditioned on District")
 ggsave('CrimeScatterPlotInEachDistrict_2016-02-16.png')
+
+```
+
+
+# Crimes with Low Counts
+Filter out the low values. What should be the cutoff? Crimes with counts less than some value add noise to the data. Log-linear type analyses require certain cell counts in order to ensure interpretability. From a visual perspective, the frequency of crime counts per day of the week per district seem to stabilize between 50 and 100.
+```{r crimes-with-low-counts}
+ggplot(df, aes(x=Count)) +
+  geom_density() +
+  ggtitle('Density Plot of Number of Crimes Per District Per Day of the Week')
+```
+
+```{r crimes-with-counts-lt1000}
+ggplot(df %>% filter(Count < 1000), aes(x=Count)) +
+  geom_histogram(binwidth = 1) +
+  ggtitle('Histogram of Number of Crimes Per District Per Day of the Week 
+          (< 1000)')
+```
+
+```{r crimes-with-counts-lt250}
+ggplot(df %>% filter(Count < 250), aes(x=Count)) +
+  geom_histogram(binwidth = 2) +
+  ggtitle('Histogram of Number of Crimes Per District Per Day of the Week
+          (< 250)')
+```
+
+```{r crimes-with-counts-lt100}
+ggplot(df %>% filter(Count < 100), aes(x=Count)) +
+  geom_histogram(binwidth = 1) +
+  ggtitle('Histogram of Number of Crimes Per District Per Day of the Week
+          (< 100)')
+```
+
+## CDF of Crime Count Per District Per Day of the Week
+Compute the CDF.
+```{r crime-count-cdf}
+df2 <- df %>% 
+  dplyr::ungroup() %>% 
+  select(PdDistrict, Category,Count) %>% 
+  arrange(Count) %>% 
+  mutate(CumSum = cumsum(Count)) %>%
+  mutate(CDF = CumSum/max(CumSum))
+```
+
+```{r crime-count-cdf-plot}
+ggplot(df2, aes(x=Count, y=CDF)) + 
+  geom_point() + 
+  ggtitle('Cumulative Density Function for Crime Count Frequency
+Crime Per Day of the Week Per District')
+```
+
+```{r crime-count-cdf-plot-cdf-gt-75pct}
+ggplot(df2 %>% filter(CDF > 0.75), 
+       aes(x=Count, y=CDF, label = Category, color=Category)) + 
+  geom_point() + 
+  geom_text(angle = 90, nudge_y = -0.05) +
+  ggtitle('Cumulative Density Function for Crime Count Frequency
+Crime Per Day of the Week Per District')
+```
+
+```{r crime-count-cdf-district-wise}
+df4 <- train %>% 
+  group_by(PdDistrict, Category) %>% 
+  summarise(Count = n()) %>%
+  arrange(Count) %>% 
+  mutate(CumSum = cumsum(Count))
+```
+
+```{r crime-count-cdf-plot-gt-75pct-by-district}
+ggplot(df4 %>% filter(Count > 1000), 
+       aes(x=log(Count), y=log(CumSum), label = Category, color=Category)) + 
+  geom_point() + 
+  # geom_text(angle = 315, nudge_y = 0.01, nudge_x = 0.01) +
+  geom_text() +
+  facet_wrap(~PdDistrict) +
+  ggtitle('Cumulative Density Function for Crime Count Frequency
+Crime Per District')
+```
+
+log-log plot is "linear"
+```{r crime-count-cdf-plot-gt-75pct-by-district}
+ggplot(df4, 
+       aes(x=log(Count), y=log(CumSum), label = Category, color=Category)) + 
+  geom_point() + 
+  geom_text(angle = 315, nudge_y = 2, nudge_x = 5) +
+  facet_wrap(~PdDistrict) +
+  ggtitle('Cumulative Density Function for Crime Count Frequency
+Crime Per District')
+```
+
+```{r all-crimes-cdf}
+df3 <- train %>% 
+  group_by(Category) %>% 
+  summarise(Count = n()) %>%
+  arrange(Count) %>% 
+  mutate(CumSum = cumsum(Count)) %>%
+  mutate(CDF = CumSum/max(CumSum))
+```
+
+```{r plot-cdf-all-crime}
+ggplot(df3, aes(x=Count, y=CumSum, label=Category)) + 
+  geom_point() + 
+  geom_line() + 
+  geom_text(check_overlap = TRUE) +
+  ggtitle('Cumulative Density Function for Crime Count Frequency')
+
+```
+
+```{r plot-cdf-log-all-crime}
+ggplot(df3, aes(x=log(Count), y=CDF, label=Category)) + 
+  geom_point() + 
+  geom_line() + 
+  geom_text(angle=90, nudge_y = 0.05) +
+  ggtitle('Cumulative Density Function for Crime Count Frequency')
+
+```
+
+
+# Crime Categorization Based on Criteria
+I want the data to look like:
+
+Criteria       | Category 1    | Category 2  | Marginal Total
+-------------- | ------------- | ----------- | -----------
+Categorization | 0.9           | 0.3         | sum to 1 ?
+               | Total Count   |             |  
+
+Minimize Error in Classification
+Minimize difference between predicted probabilities and actual probabilities
+
+
+
+# Questions
+1. How does temporal resolution affect classification?
+2. Do low counts have any relationship to time or space (District)?
+3. What clusters of the data exist in time? (Hierarchical Clustering)
+
+# Removing Data
+1. Low counts
+2. Misclassified crimes (spatially)
+3. 
