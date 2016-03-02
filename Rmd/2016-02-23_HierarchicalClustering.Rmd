@@ -14,8 +14,8 @@ train <- read.csv("~/Box Sync/KaggleSFCrime/Data/train.csv")
 - There are 47 NAs
 ```{r convert-date-time}
 library(dplyr)
-train$DateTime <- z <- strptime(train$Dates, "%F %H:%M:%S")
-train$DateTime <- z <- as.POSIXct(train$Dates, "%F %H:%M:%S", tz='UTC')
+train$DateTime <-strptime(train$Dates, "%F %H:%M:%S")
+train$DateTime <-as.POSIXct(train$Dates, "%F %H:%M:%S", tz='UTC')
 df <- train %>% arrange(DateTime)
 ```
 
