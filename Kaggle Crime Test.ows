@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='utf-8'?>
+<scheme description="" title="Kaggle Crime Test" version="2.0">
+	<nodes>
+		<node id="0" name="File" position="(25.0, 54.0)" project_name="Orange" qualified_name="Orange.OrangeWidgets.Data.OWFile.OWFile" title="File" version="" />
+		<node id="1" name="Outliers" position="(193.0, 89.0)" project_name="Orange" qualified_name="Orange.OrangeWidgets.Data.OWOutliers.OWOutliers" title="Outliers" version="" />
+		<node id="2" name="Data Sampler" position="(415.0, 175.0)" project_name="Orange" qualified_name="Orange.OrangeWidgets.Data.OWDataSampler.OWDataSampler" title="Data Sampler" version="" />
+		<node id="3" name="Sieve Diagram" position="(617.0, 163.0)" project_name="Orange" qualified_name="Orange.OrangeWidgets.Visualize.OWSieveDiagram.OWSieveDiagram" title="Sieve Diagram" version="" />
+	</nodes>
+	<links>
+		<link enabled="true" id="0" sink_channel="Data" sink_node_id="1" source_channel="Data" source_node_id="0" />
+		<link enabled="true" id="1" sink_channel="Data" sink_node_id="2" source_channel="Outliers" source_node_id="1" />
+		<link enabled="true" id="2" sink_channel="Data" sink_node_id="3" source_channel="Data Sample" source_node_id="2" />
+	</links>
+	<annotations />
+	<thumbnail />
+	<node_properties>
+		<properties format="literal" node_id="0">{'savedWidgetGeometry': None, 'widgetShown': None, 'showAdvanced': 0, 'createNewOn': 1, '__settingsDataVersion': None, 'localContextsVersion': (100, 0), 'recentFiles': []}</properties>
+		<properties format="literal" node_id="1">{'zscore': '4.0', 'k': 1, '__settingsDataVersion': None, 'widgetShown': None, 'savedWidgetGeometry': None, 'metric': 0}</properties>
+		<properties format="literal" node_id="2">{'autocommit': False, 'GroupText': '0.1,0.25,0.5', 'Repeat': 0, 'RandomSeed': 1, 'CVFolds': 10, 'pGroups': [0.1, 0.25, 0.5], 'Folds': 1, 'SelectType': 0, '__settingsDataVersion': None, 'nCases': 25, 'widgetShown': None, 'UseSpecificSeed': 0, 'savedWidgetGeometry': None, 'GroupSeed': 1, 'Stratified': 1, 'outFold': 1, 'nGroups': 3, 'useCases': 0, 'localContextsVersion': (100, 0), 'localContexts': [], 'selPercentage': 30}</properties>
+		<properties format="literal" node_id="3">{'showInColor': 1, 'showLines': 1, '__settingsDataVersion': None, 'widgetShown': None, 'savedWidgetGeometry': None, 'showCases': 0}</properties>
+	</node_properties>
+</scheme>
